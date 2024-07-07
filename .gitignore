@@ -1,0 +1,47 @@
+### PHP storm/ IntelliJ ###
+.idea
+.idea/*
+.idea/workspace.xml
+atlassian-ide-plugin.xml
+.settings
+*.iml
+.npmrc
+
+### vim ###
+[._]*.s[a-w][a-z]
+[._]s[a-w][a-z]
+*.un~
+Session.vim
+.netrwhist
+*~
+
+### Emacs ###
+\#*\#
+/.emacs.desktop
+/.emacs.desktop.lock
+*.elc
+auto-save-list
+tramp
+.\#*
+
+/node_modules/
+/dist/
+lib/vendor
+lib/logs
+
+all.json
+setup.pl
+
+# misc
+.vscode/
+.vscode/*
+.DS_Store
+.npmrc
+.env
+.nyc_output/*
+coverage/
+cypress/instrumented/*
+logs
+sessions
+**/*.log
+docs/

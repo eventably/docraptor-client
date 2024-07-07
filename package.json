@@ -1,0 +1,39 @@
+{
+  "name": "docraptor-client",
+  "version": "1.0.0",
+  "description": "HTML-to-PDF client for docraptor",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js",
+    "dev": "nodemon index.js",
+    "start:prod": "pm2 start index.js --name docraptor-client",
+    "stop:prod": "pm2 stop docraptor-client",
+    "restart:prod": "pm2 restart docraptor-client",
+    "test": "jest --detectOpenHandles --forceExit"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+ssh://git@github.com/karlgroves/docraptor-client.git"
+  },
+  "author": "Karl Groves <karlgroves@gmail.com>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/karlgroves/docraptor-client/issues"
+  },
+  "homepage": "https://github.com/karlgroves/docraptor-client#readme",
+  "dependencies": {
+    "@aws-sdk/client-s3": "^3.609.0",
+    "aws-sdk": "^2.1655.0",
+    "axios": "^1.7.2",
+    "bunyan": "^1.8.15",
+    "dotenv": "^16.4.5",
+    "express": "^4.19.2",
+    "prettier": "^3.3.2"
+  },
+  "devDependencies": {
+    "jest": "^29.7.0",
+    "nodemon": "^3.1.4",
+    "pm2": "^5.4.1",
+    "supertest": "^7.0.0"
+  }
+}
