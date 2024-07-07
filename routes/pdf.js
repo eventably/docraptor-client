@@ -22,6 +22,14 @@ router.post('/', async (req, res) => {
                 document_content: html,
                 name: `${uuid}.pdf`,
                 document_type: 'pdf',
+                // Enable accessibility features
+                prince_options: {
+                    accessibility: true,
+                    // Additional options for improved accessibility
+                    tag_svg: true, // Tag SVG elements
+                    lang: 'en', // Set the document language
+                    pdf_profile: 'PDF/UA-1' // Ensure the PDF is PDF/UA compliant
+                }
             },
         });
 

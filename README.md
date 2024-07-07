@@ -1,7 +1,9 @@
 
 # DocRaptor Client
 
-This project is a Node.js-based API that proxies the DocRaptor service. It provides routes for creating, retrieving, checking, and deleting PDFs. The resulting PDFs are stored in an Amazon S3 bucket.
+This project is a Node.js-based API that proxies the [DocRaptor](https://docraptor.com/) service. It provides routes for creating, retrieving, checking, and deleting PDFs. The resulting PDFs are stored in an Amazon S3 bucket.
+
+The PDFs created by DocRaptor should be accessible. However, the level of accessibility is predicated upon the service being fed accessible HTML to begin with. Furthermore, you should be aware that there are some inherent limits in PDF for making certain kinds of content accessible. That said, clean, well-structured HTML should result in an accessible PDF from the DocRaptor service.
 
 ## Features
 
