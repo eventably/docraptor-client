@@ -1,0 +1,110 @@
+name: CI Quality Checks
+
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+    branches: [main, develop]
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  lint:
+    name: Lint & Format
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 'lts/*'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run ESLint
+        run: npm run lint --if-present
+
+      - name: Check Prettier formatting
+        run: npm run format:check --if-present || npx prettier --check "**/*.{js,jsx,ts,tsx,json,css,scss,md}" --ignore-path .gitignore
+
+      - name: Lint Markdown
+        run: npm run lint:md --if-present || npx markdownlint '**/*.md' --ignore node_modules --ignore '**/CHANGELOG.md'
+        continue-on-error: true
+
+      - name: Check for code duplication (jscpd)
+        run: npm run lint:cpd:ci --if-present || npx jscpd . --threshold 5 --reporters console
+        continue-on-error: true
+
+      - name: Upload duplication report
+        uses: actions/upload-artifact@v4
+        with:
+          name: jscpd-report
+          path: reports/jscpd/
+          retention-days: 30
+        if: always()
+
+  typecheck:
+    name: TypeScript Check
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 'lts/*'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Check for TypeScript config
+        id: check-ts
+        run: |
+          if [ -f "tsconfig.json" ]; then
+            echo "has_typescript=true" >> $GITHUB_OUTPUT
+          else
+            echo "has_typescript=false" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Run TypeScript compiler
+        if: steps.check-ts.outputs.has_typescript == 'true'
+        run: npx tsc --noEmit
+
+  test:
+    name: Tests
+    runs-on: ubuntu-latest
+    environment: Test
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 'lts/*'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Create logs directory
+        run: mkdir -p ./logs
+
+      - name: Set up environment variables
+        run: |
+          echo "DOCRAPTOR_API_KEY=${{ secrets.DOCRAPTOR_API_KEY }}" >> $GITHUB_ENV
+          echo "AWS_ACCESS_KEY_ID=${{ secrets.AWS_ACCESS_KEY_ID }}" >> $GITHUB_ENV
+          echo "AWS_SECRET_ACCESS_KEY=${{ secrets.AWS_SECRET_ACCESS_KEY }}" >> $GITHUB_ENV
+          echo "AWS_REGION=${{ secrets.AWS_REGION }}" >> $GITHUB_ENV
+          echo "S3_BUCKET=${{ secrets.S3_BUCKET }}" >> $GITHUB_ENV
+          echo "PORT=3000" >> $GITHUB_ENV
+
+      - name: Run tests
+        run: npm test
+        env:
+          CI: true
