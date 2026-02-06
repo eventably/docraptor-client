@@ -22,7 +22,7 @@ The PDFs created by DocRaptor should be accessible. However, the level of access
 1. Clone the repository:
 
     ```sh
-    git clone git+ssh://git@github.com/karlgroves/docraptor-client.git
+    git clone git+ssh://git@github.com/eventably/docraptor-client.git
     cd docraptor-client
     ```
 
