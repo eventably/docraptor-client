@@ -1,4 +1,3 @@
-
 # DocRaptor Client
 
 This project is a Node.js-based API that proxies the [DocRaptor](https://docraptor.com/) service. It provides routes for creating, retrieving, checking, and deleting PDFs. The resulting PDFs are stored in an Amazon S3 bucket.
@@ -21,16 +20,16 @@ The PDFs created by DocRaptor should be accessible. However, the level of access
 
 1. Clone the repository:
 
-    ```sh
-    git clone git+ssh://git@github.com/eventably/docraptor-client.git
-    cd docraptor-client
-    ```
+   ```sh
+   git clone git+ssh://git@github.com/eventably/docraptor-client.git
+   cd docraptor-client
+   ```
 
 2. Install dependencies:
 
-    ```sh
-    npm install
-    ```
+   ```sh
+   npm install
+   ```
 
 3. Create a `.env` file in the root of the project using `.envSAMPLE` as your guide for the content needed.
 
@@ -81,7 +80,7 @@ npm run test
 
 ## Logging
 
-The application uses Bunyan for logging. Logs are printed to the console *and* to file by default. Feel free to modify this behavior in `./logger.js`
+The application uses Bunyan for logging. Logs are printed to the console _and_ to file by default. Feel free to modify this behavior in `./logger.js`
 
 ## Environment Variables
 
