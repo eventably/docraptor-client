@@ -12,32 +12,30 @@ const uuid = uuidv4();
 const html = '<h1>Hello, DocRaptor!</h1>';
 
 describe('PDF Routes', () => {
-    it('should create and upload a PDF', async () => {
-        const response = await request(app)
-            .post('/pdf')
-            .send({ html, uuid });
+  it('should create and upload a PDF', async () => {
+    const response = await request(app).post('/pdf').send({ html, uuid });
 
-        expect(response.status).toBe(201);
-        expect(response.text).toBe('PDF created and uploaded.');
-    });
+    expect(response.status).toBe(201);
+    expect(response.text).toBe('PDF created and uploaded.');
+  });
 
-    it('should retrieve a PDF', async () => {
-        const response = await request(app).get(`/pdf/${uuid}`);
-        
-        expect(response.status).toBe(200);
-        expect(response.headers['content-type']).toBe('application/pdf');
-    });
+  it('should retrieve a PDF', async () => {
+    const response = await request(app).get(`/pdf/${uuid}`);
 
-    it('should check if a PDF exists', async () => {
-        const response = await request(app).head(`/pdf/${uuid}`);
+    expect(response.status).toBe(200);
+    expect(response.headers['content-type']).toBe('application/pdf');
+  });
 
-        expect(response.status).toBe(200);
-    });
+  it('should check if a PDF exists', async () => {
+    const response = await request(app).head(`/pdf/${uuid}`);
 
-    it('should delete a PDF', async () => {
-        const response = await request(app).delete(`/pdf/${uuid}`);
+    expect(response.status).toBe(200);
+  });
 
-        expect(response.status).toBe(200);
-        expect(response.text).toBe('PDF deleted');
-    });
+  it('should delete a PDF', async () => {
+    const response = await request(app).delete(`/pdf/${uuid}`);
+
+    expect(response.status).toBe(200);
+    expect(response.text).toBe('PDF deleted');
+  });
 });

@@ -1,7 +1,6 @@
 {
-    "watch": ["index.js", "routes/", "logger.js", ".env"],
-    "ext": "js,json",
-    "ignore": ["node_modules/"],
-    "exec": "node index.js"
-  }
-  
+  "watch": ["index.js", "routes/", "logger.js", ".env"],
+  "ext": "js,json",
+  "ignore": ["node_modules/"],
+  "exec": "node index.js"
+}

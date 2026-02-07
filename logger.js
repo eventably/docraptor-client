@@ -5,17 +5,17 @@ const path = require('path');
 const logFilePath = path.join(__dirname, 'logs', 'app.log');
 
 const logger = bunyan.createLogger({
-    name: 'docraptor-client',
-    streams: [
-        {
-            level: 'info',
-            stream: process.stdout, // log INFO and above to stdout
-        },
-        {
-            level: 'info',
-            path: logFilePath, // log INFO and above to a file
-        },
-    ],
+  name: 'docraptor-client',
+  streams: [
+    {
+      level: 'info',
+      stream: process.stdout, // log INFO and above to stdout
+    },
+    {
+      level: 'info',
+      path: logFilePath, // log INFO and above to a file
+    },
+  ],
 });
 
 module.exports = logger;

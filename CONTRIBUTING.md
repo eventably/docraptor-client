@@ -1,4 +1,3 @@
-
 # Contributing to DocRaptor Client
 
 We welcome contributions to the DocRaptor Client project! Below are the guidelines for contributing to this project.

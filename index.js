@@ -10,5 +10,5 @@ app.use(bodyParser.json());
 app.use('/pdf', require('./routes/pdf'));
 
 app.listen(port, () => {
-    logger.info(`Server is running on port ${port}`);
+  logger.info(`Server is running on port ${port}`);
 });
