@@ -50,7 +50,7 @@
     "bunyan": "^1.8.15",
     "dotenv": "^16.4.5",
     "express": "^5.2.1",
-    "uuid": "^9.0.1"
+    "uuid": "^13.0.0"
   },
   "devDependencies": {
     "@eslint/js": "^9.0.0",
