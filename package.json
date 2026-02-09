@@ -46,7 +46,7 @@
   "homepage": "https://github.com/karlgroves/docraptor-client#readme",
   "dependencies": {
     "@aws-sdk/client-s3": "^3.985.0",
-    "axios": "^1.7.2",
+    "axios": "^1.13.5",
     "bunyan": "^1.8.15",
     "dotenv": "^16.4.5",
     "express": "^5.2.1",
@@ -61,9 +61,9 @@
     "jscpd": "^4.0.0",
     "lint-staged": "^15.0.0",
     "markdownlint-cli": "^0.47.0",
-    "nodemon": "^3.1.4",
+    "nodemon": "^3.1.11",
     "pm2": "^5.4.1",
-    "prettier": "^3.3.2",
-    "supertest": "^7.0.0"
+    "prettier": "^3.8.1",
+    "supertest": "^7.2.2"
   }
 }
