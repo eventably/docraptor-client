@@ -46,7 +46,7 @@
   "homepage": "https://github.com/karlgroves/docraptor-client#readme",
   "dependencies": {
     "@aws-sdk/client-s3": "^3.985.0",
-    "axios": "^1.7.2",
+    "axios": "^1.13.5",
     "bunyan": "^1.8.15",
     "dotenv": "^16.4.5",
     "express": "^5.2.1",
