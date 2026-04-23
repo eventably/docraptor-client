@@ -35,6 +35,17 @@ The PDFs created by DocRaptor should be accessible. However, the level of access
 
 4. Ensure that your S3 bucket permissions are correct.
 
+5. (Optional) Install local security and link-checking binaries used by the
+   `security:*` and `links` scripts:
+
+   ```sh
+   bash scripts/bootstrap.sh
+   ```
+
+   The scripts skip gracefully on machines without these binaries, so bootstrap
+   is only required if you want pre-commit secret scanning and the full
+   `npm run check:all` pipeline to run.
+
 ## Usage
 
 ### Development
@@ -78,13 +89,52 @@ To run tests:
 npm run test
 ```
 
+### Quality gates
+
+| Script                 | What it runs                                          |
+| ---------------------- | ----------------------------------------------------- |
+| `npm run lint`         | ESLint                                                |
+| `npm run format:check` | Prettier check                                        |
+| `npm run lint:md`      | markdownlint                                          |
+| `npm run check`        | lint + format check + markdown lint                   |
+| `npm run check:all`    | `check` + tests + duplication + license check + links |
+| `npm run security`     | npm audit + OSV + Semgrep + secret scan               |
+
+Husky hooks run `lint-staged` + secret scan on commit, commitlint on the
+commit message, and `npm run check` on push. Binary-dependent steps
+(gitleaks, osv-scanner, semgrep, lychee) skip gracefully when the binaries
+aren't installed; run `scripts/bootstrap.sh` to install them.
+
+### Architecture Decision Records
+
+Significant tooling and architecture decisions live in [`docs/adr/`](./docs/adr).
+Templates for new ADRs and READMEs are in [`docs/templates/`](./docs/templates).
+
 ## Logging
 
 The application uses Bunyan for logging. Logs are printed to the console _and_ to file by default. Feel free to modify this behavior in `./logger.js`
 
 ## Environment Variables
 
-The application uses `dotenv` to manage environment variables. Ensure the `.env` file is present in the root of the project with the necessary variables.
+The application uses `dotenv` + [`envalid`](https://github.com/af/envalid) to
+validate environment variables at boot. If any required variable is missing or
+malformed, the process exits immediately with a descriptive error.
+
+| Variable                | Required | Default        | Purpose                                                      |
+| ----------------------- | -------- | -------------- | ------------------------------------------------------------ |
+| `DOCRAPTOR_API_KEY`     | yes      | —              | API key for DocRaptor                                        |
+| `AWS_ACCESS_KEY_ID`     | yes      | —              | AWS credentials                                              |
+| `AWS_SECRET_ACCESS_KEY` | yes      | —              | AWS credentials                                              |
+| `AWS_REGION`            | yes      | —              | AWS region for the S3 bucket                                 |
+| `S3_BUCKET`             | yes      | —              | S3 bucket name for PDF storage                               |
+| `PORT`                  | no       | `3000`         | Server port                                                  |
+| `NODE_ENV`              | no       | `development`  | One of `development` \| `test` \| `production`               |
+| `CORS_ORIGIN`           | no       | (empty)        | Comma-separated list of allowed origins; empty = same-origin |
+| `RATE_LIMIT_WINDOW_MS`  | no       | `900000` (15m) | Rate limit window per IP                                     |
+| `RATE_LIMIT_MAX`        | no       | `100`          | Max requests per window per IP                               |
+
+See [`docs/adr/0002-express-runtime-hardening.md`](./docs/adr/0002-express-runtime-hardening.md)
+for hardening details (helmet, rate limiting, zod input validation, CORS).
 
 ## License
 
