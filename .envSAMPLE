@@ -3,4 +3,13 @@ AWS_ACCESS_KEY_ID=
 AWS_SECRET_ACCESS_KEY=
 AWS_REGION=
 S3_BUCKET=
-PORT=
+PORT=3000
+
+# Optional
+NODE_ENV=development
+# Comma-separated list of allowed CORS origins. Empty = same-origin only.
+CORS_ORIGIN=
+# Rate limit window in milliseconds (default 15 minutes).
+RATE_LIMIT_WINDOW_MS=900000
+# Max requests per window per IP (default 100).
+RATE_LIMIT_MAX=100

@@ -42,6 +42,27 @@ npm run test
 - Do not use mocks; tests should interact with real services and resources.
 - Ensure tests clean up any resources they create (e.g., test files should be deleted rather than saved).
 
+## Commit messages
+
+Commit messages are validated by [commitlint](https://commitlint.js.org/) using
+the [Conventional Commits](https://www.conventionalcommits.org/) spec (enforced
+via the Husky `commit-msg` hook). Examples:
+
+- `feat(pdf): add retry on S3 upload failure`
+- `fix(logger): write logs to correct directory`
+- `chore(deps): bump axios to 1.7.2`
+- `docs(readme): document check:all workflow`
+
+## Quality gates
+
+Before pushing, Husky runs `npm run check` (lint + format check + markdown
+lint). For larger changes, run the full `npm run check:all` locally — this adds
+tests, duplication, license compliance, and link checking.
+
+Security scans (`npm run security`) require binaries installed by
+`scripts/bootstrap.sh` (gitleaks, osv-scanner, semgrep). The scripts skip
+gracefully if the binaries aren't present.
+
 ## Submitting Changes
 
 1. Fork the repository.
@@ -49,7 +70,7 @@ npm run test
 3. Implement your changes.
 4. Write tests to cover your changes.
 5. Ensure all tests pass.
-6. Commit your changes with a descriptive commit message.
+6. Commit your changes with a conventional-commit-style message.
 7. Push your branch to your fork.
 8. Submit a pull request to the develop branch.
 

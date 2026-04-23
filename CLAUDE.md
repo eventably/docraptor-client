@@ -53,14 +53,24 @@ This is a Node.js API service that proxies DocRaptor's HTML-to-PDF conversion se
 
 ### Environment Variables
 
-Required variables (see `.envSAMPLE`):
+Validated at boot via `config/env.js` (envalid). Missing/invalid values abort
+the process immediately.
+
+Required (see `.envSAMPLE`):
 
 - `DOCRAPTOR_API_KEY`: API key for DocRaptor service
 - `AWS_ACCESS_KEY_ID`: AWS credentials
 - `AWS_SECRET_ACCESS_KEY`: AWS credentials
 - `AWS_REGION`: AWS region for S3 bucket
 - `S3_BUCKET`: S3 bucket name for PDF storage
-- `PORT`: Server port (defaults to 3000)
+
+Optional:
+
+- `PORT`: Server port (default `3000`)
+- `NODE_ENV`: `development` | `test` | `production` (default `development`)
+- `CORS_ORIGIN`: comma-separated allowlist (default empty = same-origin only)
+- `RATE_LIMIT_WINDOW_MS`: rate limit window (default `900000` = 15 min)
+- `RATE_LIMIT_MAX`: max requests per window per IP (default `100`)
 
 ## Git Workflow
 
