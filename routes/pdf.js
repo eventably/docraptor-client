@@ -6,46 +6,65 @@ const {
   GetObjectCommand,
   DeleteObjectCommand,
 } = require('@aws-sdk/client-s3');
-const { v4: uuidv4 } = require('uuid');
+const { z } = require('zod');
+const env = require('../config/env');
 const logger = require('../logger');
-require('dotenv').config();
 
 const router = express.Router();
-const s3Client = new S3Client({ region: process.env.AWS_REGION });
+const s3Client = new S3Client({ region: env.AWS_REGION });
+
+const MAX_HTML_BYTES = 10_000_000;
+
+const PostBodySchema = z.object({
+  html: z.string().min(1).max(MAX_HTML_BYTES),
+  uuid: z.string().uuid(),
+});
+
+const UuidParamSchema = z.object({
+  uuid: z.string().uuid(),
+});
+
+/**
+ * Build the S3 object params for a given UUID.
+ *
+ * @param {string} uuid - Client-provided UUID identifying the PDF.
+ * @returns {{ Bucket: string, Key: string }} S3 object params.
+ */
+function s3Params(uuid) {
+  return { Bucket: env.S3_BUCKET, Key: `${uuid}.pdf` };
+}
 
 router.post('/', async (req, res) => {
-  const { html, uuid } = req.body;
-  if (!html || !uuid) {
-    return res.status(400).send('HTML and UUID are required.');
+  const parsed = PostBodySchema.safeParse(req.body);
+  if (!parsed.success) {
+    return res.status(400).json({ error: parsed.error.flatten() });
   }
+  const { html, uuid } = parsed.data;
 
   try {
     const response = await axios.post('https://docraptor.com/docs', {
-      user_credentials: process.env.DOCRAPTOR_API_KEY,
+      user_credentials: env.DOCRAPTOR_API_KEY,
       doc: {
         test: true,
         document_content: html,
         name: `${uuid}.pdf`,
         document_type: 'pdf',
-        // Enable accessibility features
         prince_options: {
           accessibility: true,
-          // Additional options for improved accessibility
-          tag_svg: true, // Tag SVG elements
-          lang: 'en', // Set the document language
-          pdf_profile: 'PDF/UA-1', // Ensure the PDF is PDF/UA compliant
+          tag_svg: true,
+          lang: 'en',
+          pdf_profile: 'PDF/UA-1',
         },
       },
     });
 
-    const params = {
-      Bucket: process.env.S3_BUCKET,
-      Key: `${uuid}.pdf`,
-      Body: Buffer.from(response.data),
-      ContentType: 'application/pdf',
-    };
-
-    await s3Client.send(new PutObjectCommand(params));
+    await s3Client.send(
+      new PutObjectCommand({
+        ...s3Params(uuid),
+        Body: Buffer.from(response.data),
+        ContentType: 'application/pdf',
+      }),
+    );
     logger.info(`PDF created and uploaded to S3 with UUID: ${uuid}`);
     res.status(201).send('PDF created and uploaded.');
   } catch (error) {
@@ -55,14 +74,14 @@ router.post('/', async (req, res) => {
 });
 
 router.get('/:uuid', async (req, res) => {
-  const { uuid } = req.params;
-  const params = {
-    Bucket: process.env.S3_BUCKET,
-    Key: `${uuid}.pdf`,
-  };
+  const parsed = UuidParamSchema.safeParse(req.params);
+  if (!parsed.success) {
+    return res.status(400).json({ error: parsed.error.flatten() });
+  }
+  const { uuid } = parsed.data;
 
   try {
-    const data = await s3Client.send(new GetObjectCommand(params));
+    const data = await s3Client.send(new GetObjectCommand(s3Params(uuid)));
     res.setHeader('Content-Type', 'application/pdf');
     data.Body.pipe(res);
   } catch (error) {
@@ -72,14 +91,14 @@ router.get('/:uuid', async (req, res) => {
 });
 
 router.head('/:uuid', async (req, res) => {
-  const { uuid } = req.params;
-  const params = {
-    Bucket: process.env.S3_BUCKET,
-    Key: `${uuid}.pdf`,
-  };
+  const parsed = UuidParamSchema.safeParse(req.params);
+  if (!parsed.success) {
+    return res.status(400).json({ error: parsed.error.flatten() });
+  }
+  const { uuid } = parsed.data;
 
   try {
-    await s3Client.send(new GetObjectCommand(params));
+    await s3Client.send(new GetObjectCommand(s3Params(uuid)));
     res.status(200).send('PDF exists');
   } catch (error) {
     logger.error('PDF does not exist', error);
@@ -88,14 +107,14 @@ router.head('/:uuid', async (req, res) => {
 });
 
 router.delete('/:uuid', async (req, res) => {
-  const { uuid } = req.params;
-  const params = {
-    Bucket: process.env.S3_BUCKET,
-    Key: `${uuid}.pdf`,
-  };
+  const parsed = UuidParamSchema.safeParse(req.params);
+  if (!parsed.success) {
+    return res.status(400).json({ error: parsed.error.flatten() });
+  }
+  const { uuid } = parsed.data;
 
   try {
-    await s3Client.send(new DeleteObjectCommand(params));
+    await s3Client.send(new DeleteObjectCommand(s3Params(uuid)));
     logger.info(`PDF deleted from S3 with UUID: ${uuid}`);
     res.status(200).send('PDF deleted');
   } catch (error) {
