@@ -102,7 +102,7 @@ npm run test
 
 Husky hooks run `lint-staged` + secret scan on commit, commitlint on the
 commit message, and `npm run check` on push. Binary-dependent steps
-(gitleaks, osv-scanner, semgrep, lychee) skip gracefully when the binaries
+(trufflehog, osv-scanner, semgrep, lychee) skip gracefully when the binaries
 aren't installed; run `scripts/bootstrap.sh` to install them.
 
 ### Architecture Decision Records

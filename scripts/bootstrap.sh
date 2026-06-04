@@ -25,13 +25,13 @@ if ! need git; then
   exit 1
 fi
 
-# gitleaks — secret scanning (used by pre-commit hook and security:secrets script)
-if ! need gitleaks; then
-  echo "Installing gitleaks..."
+# trufflehog — secret scanning (used by pre-commit hook and security:secrets script)
+if ! need trufflehog; then
+  echo "Installing trufflehog..."
   if need brew; then
-    brew install gitleaks
+    brew install trufflehog
   else
-    install_hint gitleaks "https://github.com/gitleaks/gitleaks/releases"
+    install_hint trufflehog "https://github.com/trufflesecurity/trufflehog/releases"
   fi
 fi
 

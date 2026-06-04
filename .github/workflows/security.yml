@@ -42,6 +42,20 @@ jobs:
           path: npm-audit-results.json
           retention-days: 30
 
+  # Secret scanning — fails only on verified (live) credentials
+  secret-scan:
+    name: TruffleHog Secret Scan
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Run TruffleHog
+        uses: trufflesecurity/trufflehog@main
+        with:
+          extra_args: --results=verified --fail
+
   # CodeQL Analysis (SAST)
   codeql:
     name: CodeQL Analysis

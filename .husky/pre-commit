@@ -1,7 +1,7 @@
 npx lint-staged
 
-if command -v gitleaks >/dev/null 2>&1; then
-  gitleaks protect --staged --no-banner --redact
+if command -v trufflehog >/dev/null 2>&1; then
+  trufflehog git file://. --since-commit HEAD --results=verified --fail
 else
-  echo "warning: gitleaks not installed; run scripts/bootstrap.sh to enable secret scanning"
+  echo "warning: trufflehog not installed; run scripts/bootstrap.sh to enable secret scanning"
 fi

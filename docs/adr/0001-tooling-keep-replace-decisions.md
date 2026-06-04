@@ -48,13 +48,13 @@ explicitly chose not to adopt.
 | `eslint-plugin-unicorn`                        | Modern JS patterns (tuned for CJS Node — many rules disabled)     |
 | `eslint-plugin-jsdoc`                          | Validates JSDoc tags/params on documented functions               |
 | `commitlint` + conventional                    | Enforces conventional commit messages via `commit-msg` hook       |
-| `gitleaks`                                     | Pre-commit secret scanning (graceful skip if not installed)       |
+| `trufflehog`                                   | Secret scanning, verified detectors (replaced gitleaks, see #35)  |
 | `osv-scanner`                                  | Dependency vulnerability scanning (via `npm run security:osv`)    |
 | `semgrep`                                      | SAST with OWASP Top 10 ruleset (via `npm run security:semgrep`)   |
 | `lychee`                                       | Markdown link checker (via `npm run links`)                       |
 | `license-checker-rseidelsohn`                  | License compliance (allowlist approach)                           |
 | Husky `commit-msg` / `pre-push` / `post-merge` | Conventional-commit enforcement, pre-push gates, post-merge audit |
-| `scripts/bootstrap.sh`                         | Installs binary tools (gitleaks, osv-scanner, semgrep, lychee)    |
+| `scripts/bootstrap.sh`                         | Installs binary tools (trufflehog, osv-scanner, semgrep, lychee)  |
 
 ### Explicitly skipped — not applicable to this project
 
@@ -83,7 +83,7 @@ explicitly chose not to adopt.
 ## Consequences
 
 - Tooling stays focused on what this tiny Node.js API actually benefits from.
-- Binary-dependent scripts (gitleaks, semgrep, etc.) skip gracefully when tools
+- Binary-dependent scripts (trufflehog, semgrep, etc.) skip gracefully when tools
   aren't installed. New contributors should run `bash scripts/bootstrap.sh`.
 - The Express runtime-hardening items (helmet, rate-limit, zod, envalid) are
   left for a follow-up issue since they change runtime behavior and deserve
