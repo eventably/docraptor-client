@@ -97,3 +97,7 @@ GitHub Actions workflow (`.github/workflows/test.yml`) runs Jest tests on PRs to
 - **GET /pdf/:uuid**: Retrieve PDF
 - **HEAD /pdf/:uuid**: Check if PDF exists
 - **DELETE /pdf/:uuid**: Delete PDF from S3
+
+## Reviewing PRs
+
+Whenever I ask to review a PR (pull request), use the `pr-review` skill.
