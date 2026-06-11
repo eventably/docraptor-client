@@ -1,1 +1,12 @@
+#!/usr/bin/env sh
 npm run check
+
+if command -v trufflehog >/dev/null 2>&1; then
+  # Secondary net: scan the commits about to be pushed (everything the upstream
+  # branch doesn't yet have) for verified secrets. Here --since-commit is
+  # meaningful because those commits already exist locally.
+  upstream=$(git rev-parse --verify --quiet '@{upstream}' 2>/dev/null)
+  if [ -n "$upstream" ]; then
+    trufflehog git "file://$(pwd)" --since-commit "$upstream" --results=verified --fail --no-update
+  fi
+fi

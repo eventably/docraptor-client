@@ -25,7 +25,7 @@
     "security:check": "npm audit --audit-level=high",
     "security:osv": "command -v osv-scanner >/dev/null 2>&1 && osv-scanner --lockfile=package-lock.json || echo 'skip: osv-scanner not installed (run scripts/bootstrap.sh)'",
     "security:semgrep": "command -v semgrep >/dev/null 2>&1 && semgrep --config=p/javascript --config=p/nodejsscan --config=p/express --config=p/owasp-top-ten --error --metrics=off || echo 'skip: semgrep not installed (run scripts/bootstrap.sh)'",
-    "security:secrets": "command -v gitleaks >/dev/null 2>&1 && gitleaks detect --no-banner --redact || echo 'skip: gitleaks not installed (run scripts/bootstrap.sh)'",
+    "security:secrets": "if command -v trufflehog >/dev/null 2>&1; then trufflehog git file://. --results=verified --fail; else echo 'skip: trufflehog not installed (run scripts/bootstrap.sh)'; fi",
     "security": "npm run security:audit && npm run security:osv && npm run security:semgrep && npm run security:secrets",
     "license:check": "license-checker-rseidelsohn --production --onlyAllow 'MIT;ISC;Apache-2.0;BSD-2-Clause;BSD-3-Clause;0BSD;CC0-1.0;Unlicense;Python-2.0;WTFPL;BlueOak-1.0.0' --excludePrivatePackages --summary",
     "license:report": "license-checker-rseidelsohn --production --csv --out reports/licenses.csv",

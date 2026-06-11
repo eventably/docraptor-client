@@ -60,7 +60,7 @@ lint). For larger changes, run the full `npm run check:all` locally — this add
 tests, duplication, license compliance, and link checking.
 
 Security scans (`npm run security`) require binaries installed by
-`scripts/bootstrap.sh` (gitleaks, osv-scanner, semgrep). The scripts skip
+`scripts/bootstrap.sh` (trufflehog, osv-scanner, semgrep). The scripts skip
 gracefully if the binaries aren't present.
 
 ## Submitting Changes
