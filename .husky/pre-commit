@@ -1,7 +1,14 @@
+#!/usr/bin/env sh
 npx lint-staged
 
 if command -v trufflehog >/dev/null 2>&1; then
-  trufflehog git file://. --since-commit HEAD --results=verified --fail
+  # Scan the contents of staged files for verified secrets before they are
+  # committed. A `git --since-commit HEAD` scan would see nothing here — the
+  # commit doesn't exist yet — so scan the staged paths directly.
+  if git diff --cached --name-only --diff-filter=ACM | grep -q .; then
+    git diff --cached --name-only --diff-filter=ACM -z \
+      | xargs -0 trufflehog filesystem --results=verified --fail --no-update
+  fi
 else
   echo "warning: trufflehog not installed; run scripts/bootstrap.sh to enable secret scanning"
 fi
