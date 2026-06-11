@@ -9,3 +9,6 @@ yarn.lock
 pnpm-lock.yaml
 .next
 .nuxt
+
+# Local, untracked tool settings
+.claude
