@@ -93,5 +93,8 @@
     "pm2": "^5.4.1",
     "prettier": "^3.3.2",
     "supertest": "^7.0.0"
+  },
+  "overrides": {
+    "axe-core": "npm:empty-npm-package@1.0.0"
   }
 }

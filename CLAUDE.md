@@ -101,3 +101,16 @@ GitHub Actions workflow (`.github/workflows/test.yml`) runs Jest tests on PRs to
 ## Reviewing PRs
 
 Whenever I ask to review a PR (pull request), use the `pr-review` skill.
+
+## axe-core is banned
+
+**`axe-core` must never be used in this project — directly or transitively.**
+
+- Do not add `axe-core` or any `@axe-core/*` package.
+- axe-core is neutralized in this repo via an npm `overrides` stub
+  (`"axe-core": "npm:empty-npm-package@1.0.0"`) because it is otherwise pulled in
+  transitively by tooling (e.g. eslint-config-next / eslint-plugin-sonarjs /
+  react-scripts). Do not remove that override.
+- Before adding any new dependency, verify with `npm ls axe-core` that it resolves
+  to the empty stub (version 1.0.0), never a real axe-core release.
+- Use `@afixt/a11y-assert` for accessibility checks instead.
