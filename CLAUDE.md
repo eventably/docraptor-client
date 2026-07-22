@@ -87,7 +87,16 @@ Pull requests should target the `develop` branch.
 
 ## CI/CD
 
-GitHub Actions workflow (`.github/workflows/test.yml`) runs Jest tests on PRs to `develop` branch. Tests require GitHub secrets for DocRaptor and AWS credentials.
+`.github/workflows/ci.yml` ("CI Quality Checks") is the primary workflow. It runs on
+pushes to and PRs against `main`/`develop`, with three jobs:
+
+- **Lint & Format**: ESLint, Prettier, markdownlint, jscpd
+- **TypeScript Check**: no-op unless a `tsconfig.json` is added
+- **Tests**: Jest, on the `Test` environment
+
+The Tests job requires GitHub secrets for DocRaptor and AWS credentials.
+`.github/workflows/security.yml` and `.github/workflows/pr-check.yml` cover security
+scanning and workflow validation.
 
 ## API Endpoints
 
