@@ -44,5 +44,5 @@ cypress/instrumented/*
 logs
 sessions
 **/*.log
-docs/
+docs/generated/
 reports/

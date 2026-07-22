@@ -27,6 +27,16 @@ This is a Node.js API service that proxies DocRaptor's HTML-to-PDF conversion se
 - Tests interact with real services (DocRaptor API and AWS S3) - no mocks are used
 - Tests must clean up resources they create (PDFs are deleted after testing)
 
+### Quality & Security Checks
+
+- **Everything**: `npm run check:all` (lint, format, markdown, tests, duplication,
+  licenses, links)
+- **Security audit**: `npm run security:audit` — audits **production dependencies
+  only** (`--omit=dev`) at `--audit-level=high`. Dev tooling advisories are real
+  but unreachable from the served request path, so they must not gate.
+- **Full audit including dev**: `npm run security:audit:all` (informational; this
+  is what `security.yml` runs, with `continue-on-error`)
+
 ## Architecture
 
 ### Entry Point
@@ -53,14 +63,24 @@ This is a Node.js API service that proxies DocRaptor's HTML-to-PDF conversion se
 
 ### Environment Variables
 
-Required variables (see `.envSAMPLE`):
+Validated at boot via `config/env.js` (envalid). Missing/invalid values abort
+the process immediately.
+
+Required (see `.envSAMPLE`):
 
 - `DOCRAPTOR_API_KEY`: API key for DocRaptor service
 - `AWS_ACCESS_KEY_ID`: AWS credentials
 - `AWS_SECRET_ACCESS_KEY`: AWS credentials
 - `AWS_REGION`: AWS region for S3 bucket
 - `S3_BUCKET`: S3 bucket name for PDF storage
-- `PORT`: Server port (defaults to 3000)
+
+Optional:
+
+- `PORT`: Server port (default `3000`)
+- `NODE_ENV`: `development` | `test` | `production` (default `development`)
+- `CORS_ORIGIN`: comma-separated allowlist (default empty = same-origin only)
+- `RATE_LIMIT_WINDOW_MS`: rate limit window (default `900000` = 15 min)
+- `RATE_LIMIT_MAX`: max requests per window per IP (default `100`)
 
 ## Git Workflow
 
@@ -77,7 +97,16 @@ Pull requests should target the `develop` branch.
 
 ## CI/CD
 
-GitHub Actions workflow (`.github/workflows/test.yml`) runs Jest tests on PRs to `develop` branch. Tests require GitHub secrets for DocRaptor and AWS credentials.
+`.github/workflows/ci.yml` ("CI Quality Checks") is the primary workflow. It runs on
+pushes to and PRs against `main`/`develop`, with three jobs:
+
+- **Lint & Format**: ESLint, Prettier, markdownlint, jscpd
+- **TypeScript Check**: no-op unless a `tsconfig.json` is added
+- **Tests**: Jest, on the `Test` environment
+
+The Tests job requires GitHub secrets for DocRaptor and AWS credentials.
+`.github/workflows/security.yml` and `.github/workflows/pr-check.yml` cover security
+scanning and workflow validation.
 
 ## API Endpoints
 
@@ -87,3 +116,20 @@ GitHub Actions workflow (`.github/workflows/test.yml`) runs Jest tests on PRs to
 - **GET /pdf/:uuid**: Retrieve PDF
 - **HEAD /pdf/:uuid**: Check if PDF exists
 - **DELETE /pdf/:uuid**: Delete PDF from S3
+
+## Reviewing PRs
+
+Whenever I ask to review a PR (pull request), use the `pr-review` skill.
+
+## axe-core is banned
+
+**`axe-core` must never be used in this project — directly or transitively.**
+
+- Do not add `axe-core` or any `@axe-core/*` package.
+- axe-core is neutralized in this repo via an npm `overrides` stub
+  (`"axe-core": "npm:empty-npm-package@1.0.0"`) because it is otherwise pulled in
+  transitively by tooling (e.g. eslint-config-next / eslint-plugin-sonarjs /
+  react-scripts). Do not remove that override.
+- Before adding any new dependency, verify with `npm ls axe-core` that it resolves
+  to the empty stub (version 1.0.0), never a real axe-core release.
+- Use `@afixt/a11y-assert` for accessibility checks instead.
