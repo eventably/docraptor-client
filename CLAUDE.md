@@ -27,6 +27,16 @@ This is a Node.js API service that proxies DocRaptor's HTML-to-PDF conversion se
 - Tests interact with real services (DocRaptor API and AWS S3) - no mocks are used
 - Tests must clean up resources they create (PDFs are deleted after testing)
 
+### Quality & Security Checks
+
+- **Everything**: `npm run check:all` (lint, format, markdown, tests, duplication,
+  licenses, links)
+- **Security audit**: `npm run security:audit` — audits **production dependencies
+  only** (`--omit=dev`) at `--audit-level=high`. Dev tooling advisories are real
+  but unreachable from the served request path, so they must not gate.
+- **Full audit including dev**: `npm run security:audit:all` (informational; this
+  is what `security.yml` runs, with `continue-on-error`)
+
 ## Architecture
 
 ### Entry Point
