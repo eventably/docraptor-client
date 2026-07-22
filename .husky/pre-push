@@ -7,6 +7,21 @@ if command -v trufflehog >/dev/null 2>&1; then
   # meaningful because those commits already exist locally.
   upstream=$(git rev-parse --verify --quiet '@{upstream}' 2>/dev/null)
   if [ -n "$upstream" ]; then
-    trufflehog git "file://$(pwd)" --since-commit "$upstream" --results=verified --fail --no-update
+    # Scan the repository at the common git dir rather than $(pwd). In a linked
+    # worktree `.git` is a file pointing elsewhere, and trufflehog fails outright
+    # trying to read it as a directory ("failed to read index file: ... not a
+    # directory"), which blocks the push. Worktrees share the object store and
+    # refs with the main checkout, so scanning there sees the same commits.
+    # In a normal checkout this resolves to $(pwd) and behaviour is unchanged.
+    repo_root=$(dirname "$(git rev-parse --path-format=absolute --git-common-dir)")
+
+    # Name the branch explicitly — the main checkout's HEAD is usually a
+    # different branch than the worktree being pushed from.
+    branch=$(git rev-parse --abbrev-ref HEAD)
+
+    trufflehog git "file://$repo_root" \
+      --branch "$branch" \
+      --since-commit "$upstream" \
+      --results=verified --fail --no-update
   fi
 fi
