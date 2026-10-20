@@ -42,6 +42,14 @@ const BANNED_DIRECT = [
 ];
 
 /**
+ * A registry URL for a genuine axe tarball, e.g.
+ * `https://registry.npmjs.org/axe-core/-/axe-core-4.10.2.tgz`. The package name
+ * in the path is the *real* one even when the dependency is installed under an
+ * alias, which is what makes this a more reliable signal than the entry key.
+ */
+const AXE_TARBALL = /\/(@axe-core\/[^/]+|axe-core)\/-\//;
+
+/**
  * Whether a package name is axe-core itself or lives under the @axe-core scope.
  *
  * @param name - npm package name.
@@ -49,18 +57,6 @@ const BANNED_DIRECT = [
  */
 const isAxePackageName = name => {
   return name === 'axe-core' || name.startsWith('@axe-core/');
-};
-
-/**
- * The last path segment of a lockfile key, e.g. "a/node_modules/b" -> "b".
- *
- * @param key - A `packages` key from package-lock.json.
- * @returns The bare package name.
- */
-const packageNameFromLockKey = key => {
-  const marker = 'node_modules/';
-  const index = key.lastIndexOf(marker);
-  return index === -1 ? key : key.slice(index + marker.length);
 };
 
 /**
@@ -94,15 +90,31 @@ const findResolvedAxe = lock => {
     if (key === '') {
       continue;
     }
-    if (!isAxePackageName(packageNameFromLockKey(key))) {
-      continue;
-    }
+    // Keyed on the resolved tarball rather than the entry key, so that
+    // `"a11y-engine": "npm:axe-core@4.10.2"` -- which is keyed by its alias --
+    // cannot slip past. The override's stub entry resolves to
+    // empty-npm-package, so it still does not match.
     const resolved = entry.resolved ?? '';
-    if (/\/(@axe-core\/[^/]+|axe-core)\/-\//.test(resolved)) {
+    if (AXE_TARBALL.test(resolved)) {
       offenders.push({ key, resolved, version: entry.version });
     }
   }
   return offenders;
+};
+
+/**
+ * Whether a dependency spec aliases a banned package, as in
+ * `"a11y-engine": "npm:axe-core@4.10.2"`.
+ *
+ * @param spec - The version spec from a manifest dependency section.
+ * @returns True when the spec resolves to a banned package.
+ */
+const isBannedAliasTarget = spec => {
+  if (typeof spec !== 'string' || !spec.startsWith('npm:')) {
+    return false;
+  }
+  const target = spec.slice('npm:'.length).replace(/@[^@/]*$/, '');
+  return BANNED_DIRECT.includes(target) || isAxePackageName(target);
 };
 
 /**
@@ -112,10 +124,27 @@ const findResolvedAxe = lock => {
  * @returns The offending dependency names.
  */
 const findDeclaredAxe = manifest => {
-  return [
-    ...Object.keys(manifest.dependencies ?? {}),
-    ...Object.keys(manifest.devDependencies ?? {}),
-  ].filter(name => BANNED_DIRECT.includes(name) || isAxePackageName(name));
+  const declared = new Set();
+  // Every section that can introduce a dependency, not just the two obvious
+  // ones -- an optional or peer dependency installs just as readily.
+  const sections = [
+    manifest.dependencies,
+    manifest.devDependencies,
+    manifest.optionalDependencies,
+    manifest.peerDependencies,
+  ];
+  for (const section of sections) {
+    for (const [name, spec] of Object.entries(section ?? {})) {
+      if (BANNED_DIRECT.includes(name) || isAxePackageName(name)) {
+        declared.add(name);
+        continue;
+      }
+      if (isBannedAliasTarget(spec)) {
+        declared.add(name);
+      }
+    }
+  }
+  return [...declared];
 };
 
 /**
