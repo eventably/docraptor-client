@@ -59,7 +59,15 @@ if command -v trufflehog >/dev/null 2>&1; then
   # Secondary net: scan the commits about to be pushed (everything the upstream
   # branch doesn't yet have) for verified secrets. Here --since-commit is
   # meaningful because those commits already exist locally.
-  upstream=$(git rev-parse --verify --quiet '@{upstream}' 2>/dev/null)
+  # `|| true` because husky runs this hook as `sh -e` (see .husky/_/h), and
+  # `git rev-parse --verify --quiet` exits non-zero when there is no upstream
+  # --- which is the normal state of a branch being pushed for the first time.
+  # Under -e the failing substitution terminated the hook on the spot, so every
+  # first push of a new branch failed, silently, after paying for the whole of
+  # `npm run check` above. A legitimate "nothing to compare against" is not an
+  # error, and the `[ -n "$upstream" ]` guard below already handles the empty
+  # case by skipping this secondary scan.
+  upstream=$(git rev-parse --verify --quiet '@{upstream}' 2>/dev/null) || true
   if [ -n "$upstream" ]; then
     # Scan the repository at the common git dir rather than $(pwd). In a linked
     # worktree `.git` is a file pointing elsewhere, and trufflehog fails outright
