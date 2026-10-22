@@ -97,7 +97,8 @@ npm run test
 | `npm run format:check` | Prettier check                                        |
 | `npm run lint:md`      | markdownlint                                          |
 | `npm run check:no-axe` | fails if axe-core resolves anywhere (banned)          |
-| `npm run check`        | lint + format check + markdown lint + no-axe guard    |
+| `npm run knip`         | unused files, exports and dependencies                |
+| `npm run check`        | lint + format + markdown + no-axe guard + knip        |
 | `npm run check:all`    | `check` + tests + duplication + license check + links |
 | `npm run security`     | npm audit + OSV + Semgrep + secret scan               |
 
