@@ -99,6 +99,7 @@
     "uuid": "^9.0.1"
   },
   "overrides": {
-    "axe-core": "npm:empty-npm-package@1.0.0"
+    "axe-core": "npm:empty-npm-package@1.0.0",
+    "@pm2/agent": "~2.0.4"
   }
 }
