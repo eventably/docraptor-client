@@ -58,11 +58,11 @@ jobs:
         id: detect
         run: |
           if [ -f "package.json" ]; then
-            echo "type=node" >> $GITHUB_OUTPUT
+            echo "type=node" >> "$GITHUB_OUTPUT"
           elif [ -f "requirements.txt" ] || [ -f "pyproject.toml" ]; then
-            echo "type=python" >> $GITHUB_OUTPUT
+            echo "type=python" >> "$GITHUB_OUTPUT"
           else
-            echo "type=other" >> $GITHUB_OUTPUT
+            echo "type=other" >> "$GITHUB_OUTPUT"
           fi
 
       - name: Setup Node.js
