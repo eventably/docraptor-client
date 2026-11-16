@@ -74,11 +74,11 @@ jobs:
         with:
           category: '/language:javascript-typescript'
 
-  # OWASP Dependency Check (comprehensive - weekly only)
+  # OWASP Dependency Check (comprehensive). Runs on every push/PR: the weekly
+  # cron that used to drive it was removed by fleet policy (no scheduled Actions).
   owasp-dependency-check:
     name: OWASP Dependency Check
     runs-on: ubuntu-latest
-    if: github.event_name == 'schedule' || github.event_name == 'workflow_dispatch'
     steps:
       - uses: actions/checkout@v4
 
@@ -115,11 +115,10 @@ jobs:
           sarif_file: reports/dependency-check-report.sarif
         if: always()
 
-  # License compliance check
+  # License compliance check. Runs on every push/PR (no scheduled Actions).
   license-check:
     name: License Compliance
     runs-on: ubuntu-latest
-    if: github.event_name == 'schedule' || github.event_name == 'workflow_dispatch'
     steps:
       - uses: actions/checkout@v4
 
