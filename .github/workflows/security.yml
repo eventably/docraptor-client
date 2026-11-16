@@ -96,11 +96,16 @@ jobs:
         with:
           project: ${{ github.repository }}
           path: '.'
-          format: 'HTML,JSON,SARIF'
+          # dependency-check 13.x takes one format per --format flag and rejects
+          # 'HTML,JSON,SARIF'; the action forwards this input as a single --format,
+          # so the other formats go in args. --nodeAuditAnalyzer does not exist and
+          # --nodePackageSkipDevDependencies is a valueless switch that SKIPS dev
+          # dependencies; both Node analyzers run by default and include them.
+          format: 'HTML'
           args: >
+            --format JSON
+            --format SARIF
             --enableExperimental
-            --nodeAuditAnalyzer
-            --nodePackageSkipDevDependencies false
 
       - name: Upload OWASP results
         uses: actions/upload-artifact@v4
