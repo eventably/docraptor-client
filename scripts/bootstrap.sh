@@ -71,6 +71,16 @@ if ! need lychee; then
   fi
 fi
 
+# actionlint — GitHub Actions workflow linter (used by lint:workflows script)
+if ! need actionlint; then
+  echo "Installing actionlint..."
+  if need brew; then
+    brew install actionlint
+  else
+    install_hint actionlint "https://github.com/rhysd/actionlint/releases"
+  fi
+fi
+
 echo ""
 echo "Installing npm dependencies..."
 npm ci
