@@ -13,7 +13,7 @@ set -euo pipefail
 cd "$(dirname "$0")/.."
 
 if ! command -v actionlint >/dev/null 2>&1; then
-  echo "skip: actionlint not installed (brew install actionlint, or see https://github.com/rhysd/actionlint)"
+  echo 'skip: actionlint not installed (run scripts/bootstrap.sh)'
   exit 0
 fi
 

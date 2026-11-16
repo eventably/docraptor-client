@@ -17,6 +17,9 @@
 #   npm run security:owasp -- --failOnCVSS 7 --enableRetired
 # With --failOnCVSS the scanner exits 15 when a finding meets the threshold;
 # that is reported as exit 1.
+#
+# OWASP_DC_IMAGE overrides the image, e.g. to pin a digest for a reproducible
+# run: OWASP_DC_IMAGE=owasp/dependency-check-action@sha256:<digest>
 set -euo pipefail
 
 cd "$(dirname "$0")/.."
@@ -42,11 +45,11 @@ docker pull --quiet --platform "$PLATFORM" "$IMAGE" >/dev/null
 
 mkdir -p "$OUT_DIR"
 
-# Flags mirror the workflow's intent. The workflow's own `args` also pass
-# `--nodeAuditAnalyzer` and `--nodePackageSkipDevDependencies false`, which this
-# scanner rejects ("Unrecognized option: --nodeAuditAnalyzer", exit 2). Their
-# intent -- Node audit analysis on, dev dependencies included -- is already the
-# scanner's default, so they are omitted here rather than copied.
+# Flags mirror the workflow's intent. `--nodeAuditAnalyzer` and
+# `--nodePackageSkipDevDependencies` are deliberately not passed: this scanner
+# rejects the first ("Unrecognized option", exit 2) and the second is a
+# valueless switch that SKIPS dev dependencies. Node audit analysis with dev
+# dependencies included is already the scanner's default.
 args=(
   --project "docraptor-client"
   --scan /src
