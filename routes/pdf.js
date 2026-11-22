@@ -17,11 +17,11 @@ const MAX_HTML_BYTES = 10_000_000;
 
 const PostBodySchema = z.object({
   html: z.string().min(1).max(MAX_HTML_BYTES),
-  uuid: z.string().uuid(),
+  uuid: z.guid(),
 });
 
 const UuidParamSchema = z.object({
-  uuid: z.string().uuid(),
+  uuid: z.guid(),
 });
 
 /**
@@ -37,7 +37,7 @@ function s3Params(uuid) {
 router.post('/', async (req, res) => {
   const parsed = PostBodySchema.safeParse(req.body);
   if (!parsed.success) {
-    return res.status(400).json({ error: parsed.error.flatten() });
+    return res.status(400).json({ error: z.flattenError(parsed.error) });
   }
   const { html, uuid } = parsed.data;
 
@@ -76,7 +76,7 @@ router.post('/', async (req, res) => {
 router.get('/:uuid', async (req, res) => {
   const parsed = UuidParamSchema.safeParse(req.params);
   if (!parsed.success) {
-    return res.status(400).json({ error: parsed.error.flatten() });
+    return res.status(400).json({ error: z.flattenError(parsed.error) });
   }
   const { uuid } = parsed.data;
 
@@ -93,7 +93,7 @@ router.get('/:uuid', async (req, res) => {
 router.head('/:uuid', async (req, res) => {
   const parsed = UuidParamSchema.safeParse(req.params);
   if (!parsed.success) {
-    return res.status(400).json({ error: parsed.error.flatten() });
+    return res.status(400).json({ error: z.flattenError(parsed.error) });
   }
   const { uuid } = parsed.data;
 
@@ -109,7 +109,7 @@ router.head('/:uuid', async (req, res) => {
 router.delete('/:uuid', async (req, res) => {
   const parsed = UuidParamSchema.safeParse(req.params);
   if (!parsed.success) {
-    return res.status(400).json({ error: parsed.error.flatten() });
+    return res.status(400).json({ error: z.flattenError(parsed.error) });
   }
   const { uuid } = parsed.data;
 

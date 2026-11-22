@@ -9,6 +9,7 @@ app.use('/pdf', pdfRouter);
 
 const validUuid = uuidv4();
 const invalidUuid = 'not-a-uuid';
+const nonRfcGuid = '12345678-1234-1234-1234-123456789012';
 
 describe('PDF Routes — input validation (no DocRaptor/S3 calls)', () => {
   describe('POST /pdf', () => {
@@ -40,6 +41,23 @@ describe('PDF Routes — input validation (no DocRaptor/S3 calls)', () => {
       const res = await request(app).post('/pdf').send({ html: '<h1>hi</h1>', uuid: invalidUuid });
       expect(res.status).toBe(400);
       expect(res.body.error).toBeDefined();
+    });
+
+    it('returns a flattened error body naming the failing field', async () => {
+      const res = await request(app).post('/pdf').send({ html: '<h1>hi</h1>', uuid: invalidUuid });
+      expect(res.status).toBe(400);
+      expect(res.body.error.formErrors).toEqual([]);
+      expect(res.body.error.fieldErrors.uuid).toEqual(expect.any(Array));
+      expect(res.body.error.fieldErrors.html).toBeUndefined();
+    });
+
+    it('accepts a GUID that is not RFC 9562 (version/variant nibbles unchecked)', async () => {
+      // Pins the pre-zod-4 contract: any 8-4-4-4-12 hex id is a valid key.
+      // Empty html keeps the request at the validation layer (no S3 call).
+      const res = await request(app).post('/pdf').send({ html: '', uuid: nonRfcGuid });
+      expect(res.status).toBe(400);
+      expect(res.body.error.fieldErrors.uuid).toBeUndefined();
+      expect(res.body.error.fieldErrors.html).toEqual(expect.any(Array));
     });
 
     it('rejects empty body with 400', async () => {

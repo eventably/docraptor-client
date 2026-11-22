@@ -93,3 +93,14 @@ default is 100kb — too small for any non-trivial HTML document.
   (PM2 behind nginx / ALB).
 - Consider a stricter rate limit on `POST /pdf` specifically (DocRaptor
   calls cost money; GETs from S3 are cheap).
+
+## Amendment — 2026-11-22 (zod 4, AFPP-181)
+
+zod moved from 3.x to 4.x to clear GHSA-mrhx-c7xc-m3w5. The Schemas
+section above says "UUID v4", but zod 3 `z.string().uuid()` never checked
+the version or variant: it accepted any 8-4-4-4-12 hex id. The schemas now
+use `z.guid()`, which keeps that acceptance set. zod 4 `uuid()` enforces
+RFC 9562 and would reject ids that clients may already store PDFs under.
+Error payloads come from `z.flattenError(error)`, which has the same
+`{ formErrors, fieldErrors }` shape as the zod 3 `flatten()` payload. The
+message strings differ.

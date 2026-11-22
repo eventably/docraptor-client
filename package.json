@@ -21,12 +21,12 @@
     "lint:workflows": "bash scripts/lint-workflows.sh",
     "lint:cpd": "jscpd . --config .jscpd.json",
     "lint:cpd:ci": "jscpd . --config .jscpd.json --threshold 5",
-    "links": "command -v lychee >/dev/null 2>&1 && lychee --no-progress --exclude-path node_modules --exclude-path reports --exclude-path coverage --exclude-path docs/generated '**/*.md' || echo 'skip: lychee not installed (run scripts/bootstrap.sh)'",
+    "links": "if command -v lychee >/dev/null 2>&1; then lychee --no-progress --exclude-path node_modules --exclude-path reports --exclude-path coverage --exclude-path docs/generated '**/*.md'; else echo 'skip: lychee not installed (run scripts/bootstrap.sh)'; fi",
     "security:audit": "npm audit --omit=dev --audit-level=high",
     "security:check": "npm audit --omit=dev --audit-level=high",
     "security:audit:all": "npm audit --audit-level=high",
-    "security:osv": "command -v osv-scanner >/dev/null 2>&1 && osv-scanner --lockfile=package-lock.json || echo 'skip: osv-scanner not installed (run scripts/bootstrap.sh)'",
-    "security:semgrep": "command -v semgrep >/dev/null 2>&1 && semgrep --config=p/javascript --config=p/nodejsscan --config=p/express --config=p/owasp-top-ten --error --metrics=off || echo 'skip: semgrep not installed (run scripts/bootstrap.sh)'",
+    "security:osv": "if command -v osv-scanner >/dev/null 2>&1; then osv-scanner --lockfile=package-lock.json; else echo 'skip: osv-scanner not installed (run scripts/bootstrap.sh)'; fi",
+    "security:semgrep": "if command -v semgrep >/dev/null 2>&1; then semgrep --config=p/javascript --config=p/nodejsscan --config=p/expressjs --config=p/owasp-top-ten --error --metrics=off; else echo 'skip: semgrep not installed (run scripts/bootstrap.sh)'; fi",
     "security:owasp": "bash scripts/owasp-dependency-check.sh",
     "security:secrets": "if command -v trufflehog >/dev/null 2>&1; then trufflehog git \"file://$(dirname \"$(git rev-parse --path-format=absolute --git-common-dir)\")\" --results=verified --fail; else echo 'skip: trufflehog not installed (run scripts/bootstrap.sh)'; fi",
     "security": "npm run security:audit && npm run security:osv && npm run security:semgrep && npm run security:secrets",
@@ -71,7 +71,7 @@
     "express": "^5.2.1",
     "express-rate-limit": "^7.4.0",
     "helmet": "^8.0.0",
-    "zod": "^3.23.8"
+    "zod": "^4.6.7"
   },
   "devDependencies": {
     "@commitlint/cli": "^19.5.0",
@@ -93,12 +93,12 @@
     "knip": "^6.42.1",
     "license-checker-rseidelsohn": "^4.4.0",
     "lint-staged": "^15.0.0",
-    "markdownlint-cli": "^0.47.0",
+    "markdownlint-cli": "^0.50.1",
     "nodemon": "^3.1.4",
     "pm2": "^5.4.1",
     "prettier": "^3.3.2",
     "supertest": "^7.0.0",
-    "uuid": "^9.0.1"
+    "uuid": "^11.1.1"
   },
   "overrides": {
     "axe-core": "npm:empty-npm-package@1.0.0",
