@@ -30,7 +30,11 @@ This is a Node.js API service that proxies DocRaptor's HTML-to-PDF conversion se
 ### Quality & Security Checks
 
 - **Everything**: `npm run check:all` (lint, format, markdown, tests, duplication,
-  licenses, links)
+  licenses, links, workflow lint)
+- **Workflow lint**: `npm run lint:workflows` — actionlint; local counterpart of
+  `pr-check.yml` → `validate-workflows`
+- **OWASP Dependency-Check**: `npm run security:owasp` — the same Docker image as
+  `security.yml`; needs Docker. On demand only: never add it to a hook or `check:all`
 - **Security audit**: `npm run security:audit` — audits **production dependencies
   only** (`--omit=dev`) at `--audit-level=high`. Dev tooling advisories are real
   but unreachable from the served request path, so they must not gate.

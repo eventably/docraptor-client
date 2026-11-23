@@ -1,0 +1,19 @@
+{
+  "$schema": "https://unpkg.com/knip@6/schema.json",
+
+  // Knip's defaults and its ESLint, Jest and Prettier plugins resolve this
+  // project on their own: `index.js` is the declared `main`, `routes/` is
+  // reached from it, and `tests/` comes in via the Jest plugin. No `entry` or
+  // `ignore` was needed -- the only finding was the one below.
+
+  // Compiled binaries installed by scripts/bootstrap.sh, not npm packages, so
+  // there is nothing for the `security:*` and `links` scripts to declare them
+  // in. Knip only reads package.json, which makes these findings unactionable
+  // by construction. Each of those scripts already guards with
+  // `command -v <bin> >/dev/null 2>&1` and degrades to a `skip:` message, so a
+  // missing binary is handled rather than fatal.
+  //
+  // Suppressed by name rather than by switching off the `binaries` issue type,
+  // so a genuinely missing npm-provided binary is still reported.
+  "ignoreBinaries": ["lychee", "osv-scanner", "semgrep", "trufflehog"],
+}

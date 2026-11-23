@@ -74,11 +74,11 @@ jobs:
         with:
           category: '/language:javascript-typescript'
 
-  # OWASP Dependency Check (comprehensive - weekly only)
+  # OWASP Dependency Check (comprehensive). Runs on every push/PR: the weekly
+  # cron that used to drive it was removed by fleet policy (no scheduled Actions).
   owasp-dependency-check:
     name: OWASP Dependency Check
     runs-on: ubuntu-latest
-    if: github.event_name == 'schedule' || github.event_name == 'workflow_dispatch'
     steps:
       - uses: actions/checkout@v4
 
@@ -96,11 +96,16 @@ jobs:
         with:
           project: ${{ github.repository }}
           path: '.'
-          format: 'HTML,JSON,SARIF'
+          # dependency-check 13.x takes one format per --format flag and rejects
+          # 'HTML,JSON,SARIF'; the action forwards this input as a single --format,
+          # so the other formats go in args. --nodeAuditAnalyzer does not exist and
+          # --nodePackageSkipDevDependencies is a valueless switch that SKIPS dev
+          # dependencies; both Node analyzers run by default and include them.
+          format: 'HTML'
           args: >
+            --format JSON
+            --format SARIF
             --enableExperimental
-            --nodeAuditAnalyzer
-            --nodePackageSkipDevDependencies false
 
       - name: Upload OWASP results
         uses: actions/upload-artifact@v4
@@ -115,11 +120,10 @@ jobs:
           sarif_file: reports/dependency-check-report.sarif
         if: always()
 
-  # License compliance check
+  # License compliance check. Runs on every push/PR (no scheduled Actions).
   license-check:
     name: License Compliance
     runs-on: ubuntu-latest
-    if: github.event_name == 'schedule' || github.event_name == 'workflow_dispatch'
     steps:
       - uses: actions/checkout@v4
 

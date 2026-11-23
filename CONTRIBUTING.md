@@ -56,7 +56,7 @@ via the Husky `commit-msg` hook). Examples:
 ## Quality gates
 
 Before pushing, Husky runs `npm run check` (lint + format check + markdown
-lint). For larger changes, run the full `npm run check:all` locally — this adds
+lint + the no-axe guard). For larger changes, run the full `npm run check:all` locally — this adds
 tests, duplication, license compliance, and link checking.
 
 Security scans (`npm run security`) require binaries installed by

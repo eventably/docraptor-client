@@ -91,18 +91,22 @@ npm run test
 
 ### Quality gates
 
-| Script                 | What it runs                                          |
-| ---------------------- | ----------------------------------------------------- |
-| `npm run lint`         | ESLint                                                |
-| `npm run format:check` | Prettier check                                        |
-| `npm run lint:md`      | markdownlint                                          |
-| `npm run check`        | lint + format check + markdown lint                   |
-| `npm run check:all`    | `check` + tests + duplication + license check + links |
-| `npm run security`     | npm audit + OSV + Semgrep + secret scan               |
+| Script                   | What it runs                                                          |
+| ------------------------ | --------------------------------------------------------------------- |
+| `npm run lint`           | ESLint                                                                |
+| `npm run format:check`   | Prettier check                                                        |
+| `npm run lint:md`        | markdownlint                                                          |
+| `npm run check:no-axe`   | fails if axe-core resolves anywhere (banned)                          |
+| `npm run knip`           | unused files, exports and dependencies                                |
+| `npm run check`          | lint + format + markdown + no-axe guard + knip                        |
+| `npm run lint:workflows` | actionlint over `.github/workflows` (local `validate-workflows`)      |
+| `npm run check:all`      | `check` + tests + duplication + license check + links + workflow lint |
+| `npm run security`       | npm audit + OSV + Semgrep + secret scan                               |
+| `npm run security:owasp` | OWASP Dependency-Check in Docker (on demand only; never in a hook)    |
 
 Husky hooks run `lint-staged` + secret scan on commit, commitlint on the
 commit message, and `npm run check` on push. Binary-dependent steps
-(trufflehog, osv-scanner, semgrep, lychee) skip gracefully when the binaries
+(trufflehog, osv-scanner, semgrep, lychee, actionlint) skip gracefully when the binaries
 aren't installed; run `scripts/bootstrap.sh` to install them.
 
 ### Architecture Decision Records
